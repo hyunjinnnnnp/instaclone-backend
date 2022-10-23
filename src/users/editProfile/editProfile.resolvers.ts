@@ -9,16 +9,23 @@ const resolveFn = async (
   { firstName, lastName, username, email, password: newPassword, bio, avatar },
   { loggedInUser }
 ) => {
-  const { filename, createReadStream } = await avatar;
-  const readStream = createReadStream();
-  const writeStream = createWriteStream(process.cwd() + "/uploads/" + filename);
-  // process.cwd: Current Working Directory
-  readStream.pipe(writeStream);
-  // readStream과 writeStream을 pipe(연결)시켜준다.
-
   let hashedPassword = null;
+  let avatarUrl = null;
+
   if (newPassword) {
     hashedPassword = await bcrypt.hash(newPassword, 10);
+  }
+  if (avatar) {
+    const { filename, createReadStream } = await avatar;
+    const newFilename = `${loggedInUser.id}-${Date.now()}-${filename}`;
+    const readStream = createReadStream();
+    const writeStream = createWriteStream(
+      process.cwd() + "/uploads/" + newFilename
+    );
+    // process.cwd: Current Working Directory
+    readStream.pipe(writeStream);
+    // readStream과 writeStream을 pipe(연결)시켜준다.
+    avatarUrl = `http://localhost:4000/static/${newFilename}`;
   }
   const updatedUser = await client.user.update({
     where: {
@@ -32,6 +39,7 @@ const resolveFn = async (
       email,
       bio,
       ...(hashedPassword && { password: hashedPassword }),
+      ...(avatarUrl && { avatar: avatarUrl }),
     },
   });
   if (updatedUser.id) {
