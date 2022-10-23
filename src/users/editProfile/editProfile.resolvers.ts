@@ -1,3 +1,4 @@
+import { createWriteStream } from "fs";
 import * as bcrypt from "bcrypt";
 import client from "../../client";
 import { Resolvers } from "../../types.js";
@@ -5,9 +6,16 @@ import { protectedResolver } from "../users.utils";
 
 const resolveFn = async (
   _,
-  { firstName, lastName, username, email, password: newPassword, bio },
+  { firstName, lastName, username, email, password: newPassword, bio, avatar },
   { loggedInUser }
 ) => {
+  const { filename, createReadStream } = await avatar;
+  const readStream = createReadStream();
+  const writeStream = createWriteStream(process.cwd() + "/uploads/" + filename);
+  // process.cwd: Current Working Directory
+  readStream.pipe(writeStream);
+  // readStream과 writeStream을 pipe(연결)시켜준다.
+
   let hashedPassword = null;
   if (newPassword) {
     hashedPassword = await bcrypt.hash(newPassword, 10);
