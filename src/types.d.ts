@@ -10,7 +10,7 @@ export type Resolver = (
   root: any,
   args: any,
   context: Context,
-  info: any
+  info: object
 ) => any;
 
 export type Resolvers = {

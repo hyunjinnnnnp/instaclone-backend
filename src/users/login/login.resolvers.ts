@@ -1,8 +1,9 @@
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import client from "../../client";
+import { Resolvers } from "../../types.js";
 
-export default {
+const resolvers: Resolvers = {
   Mutation: {
     login: async (_, { username, password }) => {
       const user = await client.user.findFirst({ where: { username } });
@@ -13,8 +14,10 @@ export default {
       if (!passwordCorrect) {
         return { ok: false, error: "Incorrect password." };
       }
-      const token = await jwt.sign({ id: user.id }, process.env.SECRET_KEY);
+      const token = await jwt.sign({ id: user.id }, process.env.SECRET_KEY!);
       return { ok: true, token };
     },
   },
 };
+
+export default resolvers;
