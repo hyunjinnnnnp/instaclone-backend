@@ -4,7 +4,15 @@ const resolvers: Resolvers = {
   Query: {
     seeProfile: async (_, { username }, { client }) => {
       try {
-        await client.user.findUnique({
+        const isExisting = await client.user.findUnique({
+          where: {
+            username,
+          },
+        });
+        if (!isExisting) {
+          return { ok: false, error: `${username} does not exist.` };
+        }
+        const user = await client.user.findUnique({
           where: {
             username,
           },
@@ -14,7 +22,10 @@ const resolvers: Resolvers = {
             followers: true,
           },
         });
-      } catch {}
+        return { ok: true, user };
+      } catch {
+        return { ok: false, error: "Can't load profile." };
+      }
     },
   },
 };
