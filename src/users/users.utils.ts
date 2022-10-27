@@ -22,9 +22,17 @@ export const getUser = async (token: string) => {
   }
 };
 
+export type OurResolver = (
+  root: any,
+  args: any,
+  context: Context,
+  info: object
+) => void;
+
 // Currying : Function returns another function
 export const protectedResolver =
-  (ourResolver: Resolver) => (root, args, context, info) => {
+  (ourResolver: OurResolver): Resolver =>
+  (root, args, context, info) => {
     if (!context.loggedInUser) {
       return {
         ok: false,
