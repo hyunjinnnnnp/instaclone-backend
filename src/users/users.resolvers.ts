@@ -37,6 +37,15 @@ const resolvers: Resolvers = {
       });
       return Boolean(exists);
     },
+    photos: ({ id }, _, { client }) => {
+      return client.user
+        .findUnique({
+          where: {
+            id,
+          },
+        })
+        .photos();
+    },
   },
 };
 
