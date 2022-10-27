@@ -1,5 +1,6 @@
 import { Context, Resolvers } from "../../types";
 import { protectedResolver } from "../../users/users.utils";
+import { processHashtags } from "../photos.utils";
 
 const resolveFn = async (
   _,
@@ -9,11 +10,7 @@ const resolveFn = async (
   try {
     let hashtagObjs = [];
     if (caption) {
-      const hashtags = caption.match(/#[\w]+/g);
-      hashtagObjs = hashtags.map((hashtag) => ({
-        where: { hashtag },
-        create: { hashtag },
-      }));
+      hashtagObjs = processHashtags(caption);
     }
     const photo = await client.photo.create({
       data: {
