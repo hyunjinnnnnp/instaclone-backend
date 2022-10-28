@@ -30,7 +30,9 @@ const resolvers: Resolvers = {
         },
       });
     },
-    isMine: () => {},
+    isMine: ({ userId }, _, { loggedInUser }) => {
+      return userId === loggedInUser?.id;
+    },
   },
   Hashtag: {
     photos: ({ id }, { lastId }, { client }) => {
