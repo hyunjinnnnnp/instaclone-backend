@@ -16,13 +16,21 @@ const resolvers: Resolvers = {
         },
       });
     },
-    likes: ({ id: photoId }, _, { client }) => {
+    likesNumber: ({ id: photoId }, _, { client }) => {
       return client.like.count({
         where: {
           photoId,
         },
       });
     },
+    commentsNumber: ({ id: photoId }, _, { client }) => {
+      return client.comment.count({
+        where: {
+          photoId,
+        },
+      });
+    },
+    isMine: () => {},
   },
   Hashtag: {
     photos: ({ id }, { lastId }, { client }) => {
