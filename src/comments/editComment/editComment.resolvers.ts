@@ -17,13 +17,12 @@ const resolveFn: Resolver = async (
     if (comment.userId !== loggedInUser.id) {
       return { ok: false, error: "Not authorized." };
     }
-    const ok = await client.comment.update({
+    await client.comment.update({
       where: { id: commentId },
       data: {
         payload,
       },
     });
-    console.log(ok);
     return { ok: true };
   } catch {
     return { ok: false, error: "Could not edit." };

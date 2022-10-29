@@ -19,7 +19,7 @@ const resolveFn: Resolver = async (
     if (!photo) {
       return { ok: false, error: "Photo not found." };
     }
-    const comment = await client.comment.create({
+    await client.comment.create({
       data: {
         photo: {
           connect: {
@@ -34,7 +34,7 @@ const resolveFn: Resolver = async (
         payload,
       },
     });
-    return { ok: true, result: comment };
+    return { ok: true };
   } catch {
     return { ok: false, error: "Could not complete." };
   }

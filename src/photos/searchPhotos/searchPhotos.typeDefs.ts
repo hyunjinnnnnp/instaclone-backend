@@ -9,6 +9,6 @@ export default gql`
   }
 
   type Query {
-    searchPhotos(keyword: String!, lastId: Int): searchPhotosResult
+    searchPhotos(keyword: String!, lastId: Int): searchPhotosResult!
   }
 `;

@@ -55,7 +55,6 @@ const resolveFn: Resolver = async (
         where: { OR: hashtagWithoutPhotos },
       });
     }
-
     return { ok: true };
   } catch {
     return { ok: false, error: "Could not delete." };

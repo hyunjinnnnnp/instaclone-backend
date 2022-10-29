@@ -27,7 +27,7 @@ const resolvers: Resolvers = {
         if (!photo) {
           return { ok: false, error: "Photo not found." };
         }
-        const updatedPhoto = await client.photo.update({
+        const editedPhoto = await client.photo.update({
           where: { id },
           data: {
             caption,
@@ -37,7 +37,7 @@ const resolvers: Resolvers = {
             },
           },
         });
-        return { ok: true, photo: updatedPhoto };
+        return { ok: true, result: editedPhoto };
       } catch {
         return { ok: false, error: "Could not edit." };
       }
