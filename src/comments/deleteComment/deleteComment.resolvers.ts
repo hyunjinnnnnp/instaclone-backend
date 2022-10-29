@@ -21,7 +21,7 @@ const resolveFn: Resolver = async (
     if (loggedInUser.id !== comment.userId) {
       return {
         ok: false,
-        error: "Could not delete if it's not the your comment.",
+        error: "Not authorized.",
       };
     }
     await client.comment.delete({
