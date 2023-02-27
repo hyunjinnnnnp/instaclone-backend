@@ -5,12 +5,17 @@ type Context = {
   loggedInUser: User;
   client: PrismaClient;
 };
+type Info = {
+  [key: string]: {
+    [key: string]: string;
+  };
+};
 
 export type Resolver = (
   root: any,
   args: any,
   context: Context,
-  info: object
+  info: Info
 ) => any;
 
 export type Resolvers = {

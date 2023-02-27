@@ -1,17 +1,19 @@
-import { Context, Resolvers } from "../../types";
+import { uploadToS3 } from "../../shared/shared.utils";
+import { Resolver, Resolvers } from "../../types";
 import { protectedResolver } from "../../users/users.utils";
 import { processHashtags } from "../photos.utils";
 
-const resolveFn = async (
+const resolveFn: Resolver = async (
   _,
   { file, caption },
-  { client, loggedInUser }: Context
+  { client, loggedInUser }
 ) => {
   try {
     let hashtagObjs = [];
     if (caption) {
       hashtagObjs = processHashtags(caption);
     }
+    const fileUrl = await uploadToS3(file, loggedInUser.id, "uploads");
     const photo = await client.photo.create({
       data: {
         user: {
@@ -19,7 +21,7 @@ const resolveFn = async (
             id: loggedInUser.id,
           },
         },
-        file,
+        file: fileUrl,
         caption,
         ...(hashtagObjs.length > 0 && {
           hashtags: {
@@ -28,6 +30,9 @@ const resolveFn = async (
         }),
       },
     });
+    if (!photo) {
+      return { ok: false, error: "Could not upload." };
+    }
     return { ok: true, photo };
   } catch {
     return { ok: false, error: "Could not upload." };

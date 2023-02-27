@@ -1,10 +1,10 @@
-import { createWriteStream } from "fs";
 import * as bcrypt from "bcrypt";
 import client from "../../client";
-import { Resolvers } from "../../types.js";
+import { Resolver, Resolvers } from "../../types.js";
 import { protectedResolver } from "../users.utils";
+import { uploadToS3 } from "../../shared/shared.utils";
 
-const resolveFn = async (
+const resolveFn: Resolver = async (
   _,
   { firstName, lastName, username, email, password: newPassword, bio, avatar },
   { loggedInUser }
@@ -16,16 +16,7 @@ const resolveFn = async (
     hashedPassword = await bcrypt.hash(newPassword, 10);
   }
   if (avatar) {
-    const { filename, createReadStream } = await avatar;
-    const newFilename = `${loggedInUser.id}-${Date.now()}-${filename}`;
-    const readStream = createReadStream();
-    const writeStream = createWriteStream(
-      process.cwd() + "/uploads/" + newFilename
-    );
-    // process.cwd: Current Working Directory
-    readStream.pipe(writeStream);
-    // readStream과 writeStream을 pipe(연결)시켜준다.
-    avatarUrl = `http://localhost:4000/static/${newFilename}`;
+    avatarUrl = await uploadToS3(avatar, loggedInUser.id, "avatars");
   }
   const updatedUser = await client.user.update({
     where: {
