@@ -6,7 +6,6 @@ export default {
     sendMessage: protectedResolver(
       async (_, { payload, roomId, userId }, { loggedInUser }) => {
         let room = null;
-
         if (userId) {
           const user = await client.user.findUnique({
             where: {
@@ -17,7 +16,10 @@ export default {
             },
           });
           if (!user) {
-            return { ok: false, error: "User not exist." };
+            return {
+              ok: false,
+              error: "This user does not exist.",
+            };
           }
           room = await client.room.create({
             data: {
@@ -39,7 +41,7 @@ export default {
               id: roomId,
             },
             select: {
-              id: true, // roomId만 select한다. 전체 다 로드하지 않는다.
+              id: true,
             },
           });
           if (!room) {
