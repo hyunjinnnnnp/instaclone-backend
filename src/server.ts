@@ -1,5 +1,6 @@
 require("dotenv").config();
 // import "dotenv/config";
+import { createServer } from "http";
 import * as express from "express";
 import * as logger from "morgan";
 import { ApolloServer } from "apollo-server-express";
@@ -13,18 +14,23 @@ const apolloServer = new ApolloServer({
   typeDefs,
   resolvers,
   context: async ({ req }) => {
-    return {
-      loggedInUser: await getUser(req.headers.token),
-      client,
-    };
+    if (req) {
+      return {
+        loggedInUser: await getUser(req.headers.token),
+        client,
+      };
+    }
   },
 });
 
 const app = express();
 app.use(logger("tiny"));
-app.use("/static", express.static("uploads"));
 apolloServer.applyMiddleware({ app });
-// 이제부터 apollo server는 express 위에서 작동한다
-app.listen({ port: PORT }, () => {
+app.use("/static", express.static("uploads"));
+
+const httpServer = createServer(app);
+apolloServer.installSubscriptionHandlers(httpServer);
+
+httpServer.listen(PORT, () => {
   console.log(`🌈 Server is running on http://localhost:${PORT}/`);
 });
